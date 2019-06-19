@@ -1,0 +1,133 @@
+Diff Tool Setup:
+git config --list
+git config --global diff.tool winmerge
+git config --global difftool.winmerge.cmd "'C:/Program Files (x86)/WinMerge/WinMergeU.exe' -e \$LOCAL \$REMOTE"
+
+
+Git Normal Flow:
+1. git clone <Repo http url>
+Ex: git clone http://gvlab.nrifintech.com/igv-thai/istar-gv.git
+				LOCAL			Remote
+2. git checkout -b <Branch_Name> origin/<Branch_Name> 
+Ex: git checkout -b BR-GV-FOR-THAGMO-PSMS-REL-5-14012019 origin/BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+3. git checkout -b <Issue Specific_branch> <Locally created Branch Tracking remote one>
+Ex: git checkout -b BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358 BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+On Issue specific Branch(Ex:BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358)
+4. git add --all 
+
+5. git commit -m "message for <Issue-ID>" 
+
+6. git checkout <Locally created Branch Tracking remote one>
+Ex: git checkout BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+On the branch tracking remote one(Ex: BR-GV-FOR-THAGMO-PSMS-REL-5-14012019)
+7. git pull
+
+8. git checkout <Issue Specific_branch>
+Ex: git checkout BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358
+
+On Issue specific Branch(Ex: BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358)
+9. git rebase <Locally created Branch Tracking remote one> -i
+Ex: git rebase BR-GV-FOR-THAGMO-PSMS-REL-5-14012019 -i
+
+10. git checkout <Locally created Branch Tracking remote one>
+Ex: git checkout BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+On the branch tracking remote one(Ex: BR-GV-FOR-THAGMO-PSMS-REL-5-14012019)
+11. git merge <Issue Specific_branch>   //Enter message to explain why the merge is necessary(If VM editor opens after the message press <esc>:wq <enter>)
+Ex: git merge BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358
+
+12. git push origin <Remote Branch>
+Ex: git push origin BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+Delete Issue Specific_branch
+13. git branch -d <Issue Specific_branch>
+Ex: git branch -d BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358
+
+
+N.B: In step 9 interactive(VIM editor) will open, if multiple commits are there you can squash these two by modifying as below
+
+pick a34ertty "first commit message"
+squash b23tyr67 "second commit message"
+
+---Close the editor by pressing <esc>:wq<enter>
+
+if you want to change commit message for final commit do this:
+reword a34ertty "first commit message"
+squash b23tyr67 "seconfd commit message"
+
+---Close the editor by pressing <esc>:wq<enter>
+After closing the window again VIM editor will open
+enter commit message here
+"final commit message"
+Close the editor
+
+Special Cases:
+1. If in step 2 you did something like this:
+git checkout -b PSMS-REL-5 origin/BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+i.e. Local & Remote name differs
+git push origin local_branch_name:remote_branch_name
+Ex: git push origin PSMS-REL-5:BR-GV-FOR-THAGMO-PSMS-REL-5-14012019
+
+
+2. If in step 9 after rebase you get CONFLICT message then manually merge that file only and add that file only (don't use add all)
+i) git add <specific file name>  
+Ex: git add devel\gv-core\gv-core-trd\src\main\java\com\nri\xenos\trd\query\AdjustmentRequiredExecutionFetcher.java
+ii) git status
+iii) git rebase --continue 
+
+3. Delete Branch(If pushed in remote by mistake)
+git push origin --delete <Branch Name>
+
+
+
+Push new Branch:
+git push -u origin <Branch Name>
+Stash an untracked file:
+git stash --all(Stashes Ignored Files)
+git stash --include-untracked(Does not Stash Ignored Files)
+
+Stash change in a single file
+git stash push -m BR-GV-FOR-THAGMO-PSMS-REL-5-14012019-THAGMO-12358 app/views/cart/welcome.thtml(Since git 2.13)
+
+Know last <n> commits by you:
+by author
+git log --author="soumyab" -<n>
+by file
+git log -- <file_path> -<n>
+
+To see what a commit did:
+git show <commit-id>
+
+Reset to the commit from where branch has been forked out:
+git reset --hard HEAD^
+
+Cherry-Pick:
+git cherry-pick <SHA1-CODE>
+
+Rebase with previous commits to squash
+git rebase -i HEAD~2
+
+Force push(Useful after squash local commit(s) with remote commit)
+git push -f
+
+Diff Variations:
+# show differences between index and working tree
+# that is, changes you haven't staged to commit
+git diff [filename]
+# show differences between current commit and index
+# that is, what you're about to commit
+# --staged does exactly the same thing, use what you like
+git diff --cached [filename]
+# show differences between current commit and working tree
+git diff HEAD [filename]
+#Produce the diff between the tips of the two branches
+git diff branch_1..branch_2
+#Produce the diff between two branches from Common ancestor
+git diff branch_1...branch_2
+
+git show --pretty="" --name-only bd61ad98
+git reflog --date=iso
